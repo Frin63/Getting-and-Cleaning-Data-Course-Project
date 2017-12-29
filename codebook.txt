@@ -1,0 +1,48 @@
+### Introduction
+
+This project performs cleaning and summarisation opertaion on the UCI HAR Dataset.
+
+This dataset contains measurements form smartphone sensors of 30 volunteers performing six distinct activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist.
+
+The data from this experiment has been downloaded on 2015-10-17 at 12:45 UTC from https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
+
+
+The data from this experiment contain a large number of time- and frequency domain features derived from filtered sensor data, split into a training set and a test set. 
+
+
+
+### Cleaning
+
+The data for this experiment has already undergone processing from the original unfiltered sensor data. The derived measurements and statistics (features) have been published in the downloaded data set. This data is already clean in respect that it contains no missing values or strange outliers.
+
+The data is however split out into several files. We wish to combine those into a single dataset.
+Also we wish to include only as subset of the original features: only those that contain a mean value or the standard deviation of the feature measurements.
+
+The combination of files is performed by script 'cleanData.R' as follows:
+- Part of the data is in a TEST subfolder and another part in a TRAIN subfolder. All the operations beow are performed on both folders separately. Finaly both reasults are merged using the rbind() funcion
+- The actual data has been split up into two files with the key elements Activity (y_train.txt / y_test.txt) and Subject (subject_train.txt / subject_test.txt), and one file containg the actual data for these key elements (X_train.txt / X_test.txt). These files were combined into s a single dataframe using the cbind() function.
+- The file 'features.txt' contains the names for each feature. This file was used for the column names of the features, using the names() function. The column names for the key elements are labeled 'Subject' and 'Activity' by the script. 
+- The activities are coded 1..6; The file 'activity_labels.txt' contains the descriptive text values for each  numeric code. The script replaces this code to the descriptive text using this file.
+- Finally only the features with labels containg the text 'mean()' or 'std()' are kept, yielding only the features on mean values and standard deviations.
+- The resulting data is written to CSV format (file 'projectData.csv' in the working directory root)
+
+Note: the files on 'Inertial Signals' present in the original data are discarded for this project.
+
+### Summarising
+
+Script 'summariseData.R' performs a second step in the analysis. It starts with reasing in the cleaned and filtered 'projectData.csv' from the step above.
+
+This scripts summarises all features for every distinct combination of Subject and Activity. With 30 subjects and 6 activities, this results in 180 records.
+In every record, the mean values of every feature for this combination is calculated, using the aggregate() function. The result is written to a text file named 'courseProjectTask5.txt'. To refelect this operation, all features names are prefixed with 'mean_'.
+
+### Data meaning
+
+- Activity: Descriptive txt of the physical activity performed by the subject during which the data for the features was registered.
+- Subject: Numerical code indicating the specific (anonymous) volunteer performing the Activity
+- (feature): For the meaning of every feature, consult the file 'features_info.text' and 'README.txt' in the original data set.
+- mean_(features): the summarised file 'courseProjectTask5.txt' contains the original features prefixed with 'mean_' to indicate that this is the mean of the original feature for a specific activy and subject.
+
+### License
+
+The data was obtained using this source:
+[1] Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012
